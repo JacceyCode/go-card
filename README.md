@@ -28,7 +28,7 @@ To set up the development environment, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/JacceyCode/Stockline.git
+   git clone https://github.com/JacceyCode/go-card.git
    ```
 
 2. Install dependencies:
