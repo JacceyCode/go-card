@@ -1,9 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import Constants from "expo-constants";
+
+const firebaseKey = Constants?.expoConfig?.extra?.FIREBASE_API_KEY;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAsaP_TpqwQ2D0UdRv27Pszc-nd2puEw_Y",
+  apiKey: firebaseKey,
   authDomain: "go-card-2a2f2.firebaseapp.com",
   projectId: "go-card-2a2f2",
   storageBucket: "go-card-2a2f2.appspot.com",
