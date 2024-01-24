@@ -14,7 +14,7 @@ const SignIn = () => {
           </Text>
         </View>
 
-        <Form />
+        <Form type="SignIn" />
       </View>
     </ScrollView>
   );

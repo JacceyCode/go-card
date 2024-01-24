@@ -19,7 +19,6 @@ const Navigation = () => {
         setUser(user);
       } else {
         setUser(null);
-        console.log("No current User");
       }
     });
   }, []);

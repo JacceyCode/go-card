@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -12,15 +11,12 @@ import {
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Colors } from "../constants/colors";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-import { auth } from "../firebase/firebase";
+import { signInHandler, signUpHandler } from "hooks/firebaseAuthHandler";
 
 type Data = {
   email: string;
   password: string;
+  type: string;
 };
 
 type RootStackParamList = {
@@ -31,7 +27,7 @@ type RootStackParamList = {
 
 type NavigationProps = NavigationProp<RootStackParamList>;
 
-const Form = ({ type }: { type?: string }) => {
+const Form = ({ type }: { type: string }) => {
   const navigation = useNavigation<NavigationProps>();
 
   const [email, setEmail] = useState<string>("");
@@ -46,41 +42,14 @@ const Form = ({ type }: { type?: string }) => {
   const userData = {
     email,
     password,
+    type,
   };
 
-  // const validateUserdata = (data: Data) => {
-  //   const { email, password } = data;
-
-  //   // Regular expression for email and password verification
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   const passwordRegex =
-  //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-  //   // Validation for Email, Password.
-  //   const isValidEmail = emailRegex.test(email);
-  //   const isValidPassword = passwordRegex.test(password.trim());
-
-  //   console.log(isValidEmail);
-  //   console.log(isValidPassword);
-
-  //   // Error handling of user Input
-  //   if (!isValidEmail || !isValidPassword) {
-  //     setEmailError(!isValidEmail);
-  //     setPasswordError(!isValidPassword);
-  //     return;
-  //   }
-
-  //   if (isValidEmail && isValidPassword) {
-  //     return { email, password };
-  //   }
-  // };
-
-  // validateUserdata(userData);
-
-  const signInHandler = async (data: Data) => {
+  const validateUserdata = async (data: Data) => {
     try {
       setIsLoading(true);
-      const { email, password } = data;
+      let { email, password, type } = data;
+      password = password.trim();
 
       // Regular expression for email and password verification
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -89,68 +58,33 @@ const Form = ({ type }: { type?: string }) => {
 
       // Validation for Email, Password.
       const isValidEmail = emailRegex.test(email);
-      const isValidPassword = passwordRegex.test(password.trim());
+      const isValidPassword = passwordRegex.test(password);
 
       // Error handling of user Input
       if (!isValidEmail || !isValidPassword) {
         setEmailError(!isValidEmail);
         setPasswordError(!isValidPassword);
+        setIsLoading(false);
         return;
       }
 
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password.trim()
-      );
-      const user = userCredential.user;
-      setIsLoading(false);
+      const userData = { email, password };
 
-      navigation.navigate("HomeScreen");
-
-      setEmail("");
-      setPassword("");
-    } catch (err: any) {
-      Alert.alert("Invalid Email/Password");
-      setIsLoading(false);
-    }
-  };
-
-  const signUpHandler = async (data: Data) => {
-    try {
-      setIsLoading(true);
-      const { email, password } = data;
-
-      // Regular expression for email and password verification
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const passwordRegex =
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-      // Validation for Email, Password.
-      const isValidEmail = emailRegex.test(email);
-      const isValidPassword = passwordRegex.test(password.trim());
-
-      // Error handling of user Input
-      if (!isValidEmail || !isValidPassword) {
-        setEmailError(!isValidEmail);
-        setPasswordError(!isValidPassword);
-        return;
+      if (type === "SignIn") {
+        await signInHandler(userData);
       }
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password.trim()
-      );
-      const user = userCredential.user;
-      setIsLoading(false);
-
-      navigation.navigate("HomeScreen");
+      if (type === "SignUp") {
+        await signUpHandler(userData);
+      }
 
       setEmail("");
       setPassword("");
+      setIsLoading(false);
+      return;
     } catch (err: any) {
-      Alert.alert("Email already in use");
+      setEmail(email);
+      setPassword(password);
       setIsLoading(false);
     }
   };
@@ -224,9 +158,7 @@ const Form = ({ type }: { type?: string }) => {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            type === "SignUp"
-              ? signUpHandler(userData)
-              : signInHandler(userData);
+            validateUserdata(userData);
           }}
         >
           <Text style={styles.buttonText}>

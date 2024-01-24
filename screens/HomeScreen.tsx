@@ -3,25 +3,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Wallet from "./Wallet";
 import Location from "./Location";
 import { Colors } from "../constants/colors";
-import { Alert } from "react-native";
-import { auth } from "firebase/firebase";
+import { SignOutModal } from "hooks/firebaseAuthHandler";
 
 const Tab = createBottomTabNavigator();
 
 const HomeScreen = () => {
-  const handleSignout = async () => {
-    await auth.signOut();
-  };
-
-  const Modal = () => {
-    Alert.alert("Sign Out", "Do you really want to logout", [
-      {
-        text: "Cancel",
-      },
-      { text: "Sign Out", onPress: handleSignout },
-    ]);
-  };
-
   return (
     <Tab.Navigator
       backBehavior="firstRoute"
@@ -37,7 +23,7 @@ const HomeScreen = () => {
             name="log-out"
             size={35}
             color={tintColor}
-            onPress={Modal}
+            onPress={SignOutModal}
           />
         ),
       }}
