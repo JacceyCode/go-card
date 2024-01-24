@@ -15,8 +15,12 @@ const Navigation = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      console.log("user", user);
-      setUser(user);
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+        console.log("No current User");
+      }
     });
   }, []);
 

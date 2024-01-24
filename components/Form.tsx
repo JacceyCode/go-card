@@ -23,9 +23,16 @@ type Data = {
   password: string;
 };
 
+type RootStackParamList = {
+  HomeScreen: undefined;
+  SignUp: undefined;
+  SignIn: undefined;
+};
+
+type NavigationProps = NavigationProp<RootStackParamList>;
+
 const Form = ({ type }: { type?: string }) => {
-  const navigation =
-    useNavigation<NavigationProp<ReactNavigation.RootParamList>>();
+  const navigation = useNavigation<NavigationProps>();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -40,6 +47,35 @@ const Form = ({ type }: { type?: string }) => {
     email,
     password,
   };
+
+  // const validateUserdata = (data: Data) => {
+  //   const { email, password } = data;
+
+  //   // Regular expression for email and password verification
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   const passwordRegex =
+  //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  //   // Validation for Email, Password.
+  //   const isValidEmail = emailRegex.test(email);
+  //   const isValidPassword = passwordRegex.test(password.trim());
+
+  //   console.log(isValidEmail);
+  //   console.log(isValidPassword);
+
+  //   // Error handling of user Input
+  //   if (!isValidEmail || !isValidPassword) {
+  //     setEmailError(!isValidEmail);
+  //     setPasswordError(!isValidPassword);
+  //     return;
+  //   }
+
+  //   if (isValidEmail && isValidPassword) {
+  //     return { email, password };
+  //   }
+  // };
+
+  // validateUserdata(userData);
 
   const signInHandler = async (data: Data) => {
     try {
@@ -75,7 +111,7 @@ const Form = ({ type }: { type?: string }) => {
       setEmail("");
       setPassword("");
     } catch (err: any) {
-      Alert.alert(err.message);
+      Alert.alert("Invalid Email/Password");
       setIsLoading(false);
     }
   };
@@ -114,7 +150,7 @@ const Form = ({ type }: { type?: string }) => {
       setEmail("");
       setPassword("");
     } catch (err: any) {
-      Alert.alert(err.message);
+      Alert.alert("Email already in use");
       setIsLoading(false);
     }
   };
